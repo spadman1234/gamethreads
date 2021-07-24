@@ -3,13 +3,17 @@ import "./Sidebar.css";
 import { Avatar } from "@material-ui/core";
 import { SearchOutlined } from "@material-ui/icons";
 import SidebarChat from "./SidebarChat";
+import ChatIcon from "@material-ui/icons/Chat";
 
 const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <Avatar />
-        <h1>gamethreads</h1>
+        <div className="sidebar-title">
+          <h1>gamethreads</h1>
+          <ChatIcon />
+        </div>
       </div>
       <div className="sidebar-search">
         <div className="sidebar-search-container">
