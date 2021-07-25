@@ -7,7 +7,7 @@
 
 .sidebar-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   padding: 10px;
 }
 
@@ -58,4 +58,32 @@
 
 .sidebar-title > h1 {
   padding-right: 3px;
+}
+
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+  margin-top: auto;
+  border-top: solid 1px #dbdbdb;
+  color: rgb(139, 139, 139);
+}
+
+.sidebar-flair {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: 3px;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.sidebar-flair:hover {
+  background-color: #f2f2f2;
+}
+.sidebar-flair > p {
+  margin-top: 8px;
+}
+
+.team-avatar {
+  margin-right: 8px;
 }

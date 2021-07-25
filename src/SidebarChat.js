@@ -2,15 +2,15 @@ import { Avatar } from "@material-ui/core";
 import React from "react";
 import "./SidebarChat.css";
 
-const SidebarChat = () => {
+const SidebarChat = (props) => {
   return (
     <div className="sidebarChat">
       <div className="sidebarChat-logo">
-        <Avatar src="https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-original-577x577/s3/052014/mlb.png?itok=4WGm1016" />
+        <Avatar src={props.img} />
       </div>
       <div className="sidebarChat-info">
-        <h2>New York Mets vs Washington Nationals</h2>
-        <p>Last message</p>
+        <h2>{props.title}</h2>
+        <p>{props.subtitle}</p>
       </div>
     </div>
   );

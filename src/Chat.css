@@ -6,7 +6,8 @@
 
 .chat-header {
   display: flex;
-
+  background-color: white;
+  color: black;
   padding: 15px;
   border-bottom: 0px solid #f1f1f1;
   box-shadow: 0 4px 2px -2px #d8d8d8;
@@ -20,11 +21,19 @@
   font-size: 24px;
   font-weight: 500;
   margin-top: -8px;
+  color: black;
 }
 
 .chat-header-info > p {
-  color: rgb(105, 105, 105);
+  color: rgb(114, 114, 114);
   font-size: 16px;
+}
+
+.chat-exit-button {
+  margin-left: auto;
+  font-size: small;
+  cursor: pointer;
+  padding: 10px;
 }
 
 .chat-body {
@@ -40,6 +49,16 @@
   padding: 0;
 }
 
+.chat-message-container-sent {
+  display: flex;
+  position: relative;
+  margin-left: auto;
+  justify-content: flex-end;
+  margin: 0;
+  padding: 0;
+  width: auto;
+}
+
 .chat-message {
   position: relative;
   font-size: 16px;
@@ -48,6 +67,10 @@
   border-radius: 40px;
   background-color: #f1f1f1;
   margin-bottom: 30px;
+}
+
+.chat-message-flair {
+  margin-right: 5px;
 }
 
 .chat-message-name {
@@ -64,7 +87,6 @@
 }
 
 .chat-message-sent {
-  margin-left: auto;
   background-color: rgb(34, 130, 255);
   color: white;
 }
@@ -79,10 +101,14 @@
 .chat-footer > form {
   flex: 1;
   display: flex;
-  background-color: #ebebeb;
+  background-color: #f3f3f3;
+  border: 1px solid #f3f3f3;
   border-radius: 30px;
   margin-left: 5px;
   height: 40px;
+}
+.chat-footer > form:hover {
+  border: 1px solid #ddd;
 }
 
 .chat-footer > .MuiSvgIcon-root {
@@ -107,12 +133,18 @@
 .chat-footer > form > button {
   border: none;
   background: none;
-  padding: 3px;
+  padding: 5px;
   padding-right: 8px;
+  margin-top: 2px;
   color: grey;
   cursor: pointer;
 }
 
 .chat-footer > form > button:hover {
   color: black;
+}
+
+.chat-footer-emoji-picker {
+  bottom: 80px;
+  position: absolute;
 }
