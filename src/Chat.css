@@ -1,7 +1,7 @@
 .chat {
   display: flex;
   flex-direction: column;
-  flex: 0.75;
+  flex: 0.7;
 }
 
 .chat-header {
@@ -35,10 +35,13 @@
   cursor: pointer;
   padding: 10px;
 }
+.chat-exit-button:hover {
+  color: #8f8f8f;
+}
 
 .chat-body {
   flex: 1;
-  padding: 30px;
+  padding: 20px;
   overflow: scroll;
 }
 
@@ -95,7 +98,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
+  padding-bottom: 10px;
 }
 
 .chat-footer > form {

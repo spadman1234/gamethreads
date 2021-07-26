@@ -1,8 +1,10 @@
 import { Avatar } from "@material-ui/core";
 import { Close, InsertEmoticon, Send } from "@material-ui/icons";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Chat.css";
 import Picker from "emoji-picker-react";
+import Pusher from "pusher-js";
+import axios from "./axios";
 
 const ChatMessage = (props) => {
   return (
@@ -11,10 +13,7 @@ const ChatMessage = (props) => {
         props.sent ? "chat-message-container-sent" : "chat-message-container"
       }
     >
-      <Avatar
-        className="chat-message-flair"
-        src="http://loodibee.com/wp-content/uploads/nfl-new-york-jets-team-logo.png"
-      />
+      <Avatar className="chat-message-flair" src={props.flair} />
       <p
         className={
           props.sent ? "chat-message chat-message-sent" : "chat-message"
@@ -24,9 +23,7 @@ const ChatMessage = (props) => {
 
         {props.message}
       </p>
-      <span className="chat-message-date">
-        {new Date().toLocaleTimeString()}
-      </span>
+      <span className="chat-message-date">{props.timestamp}</span>
     </div>
   );
 };
@@ -34,6 +31,41 @@ const ChatMessage = (props) => {
 const Chat = (props) => {
   const [chatboxValue, setChatboxValue] = useState("");
   const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  let subtitle = props.subtitle;
+  if (subtitle[subtitle.length - 1] === "Z") {
+    const date = new Date(subtitle);
+    subtitle = date.toLocaleTimeString();
+  }
+
+  useEffect(() => {
+    axios.get("/api/v1/messages/sync").then((response) => {
+      setMessages(
+        response.data.filter((message) => message.chatroom === props.title)
+      );
+    });
+  }, [props.title]);
+
+  console.log(messages);
+
+  useEffect(() => {
+    const pusher = new Pusher("6afaa4f9c8ed5946ac96", {
+      cluster: "us2",
+    });
+
+    const channel = pusher.subscribe("messages");
+    channel.bind("inserted", function (newMessage) {
+      if (props.title === newMessage.chatroom) {
+        setMessages([...messages, newMessage]);
+      }
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, [messages, props.title]);
 
   const onChatboxChange = (event) => {
     setChatboxValue(event.target.value);
@@ -50,34 +82,51 @@ const Chat = (props) => {
   const closeEmojiPicker = () => {
     setEmojiPickerVisible(false);
   };
+
+  const messagesEndRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+    axios.post("/api/v1/messages/new", {
+      message: chatboxValue,
+      name: props.username,
+      timestamp: new Date().toLocaleTimeString(),
+      flair: props.flair,
+      received: false,
+      chatroom: props.title,
+    });
+    setChatboxValue("");
+  };
+
   return (
     <div className="chat">
       <div className="chat-header">
-        <Avatar src="http://loodibee.com/wp-content/uploads/nfl-league-logo.png" />
+        <Avatar src={props.img} />
         <div className="chat-header-info">
-          <h2>New York Jets vs Carolina Panthers</h2>
-          <p>NFL - September 6 - 1:00pm EDT</p>
+          <h2>{props.title}</h2>
+          <p>{subtitle}</p>
         </div>
         <div className="chat-exit-button" onClick={props.onClose}>
           <Close></Close>
         </div>
       </div>
       <div className="chat-body" onClick={closeEmojiPicker}>
-        <ChatMessage
-          message="This is a test message!"
-          username="spadman"
-          sent={false}
-        />
-        <ChatMessage
-          message="Another message"
-          username="superspad"
-          sent={true}
-        />
-        <ChatMessage
-          message="Yessirski lets go"
-          username="mrbluesky"
-          sent={false}
-        />
+        {messages.map((message) => (
+          <ChatMessage
+            message={message.message}
+            flair={message.flair}
+            username={message.name}
+            timestamp={message.timestamp}
+            sent={message.name === props.username}
+          />
+        ))}
+        <div ref={messagesEndRef} />
       </div>
       <div className="chat-footer">
         {emojiPickerVisible ? (
@@ -96,8 +145,9 @@ const Chat = (props) => {
             onChange={onChatboxChange}
             value={chatboxValue}
             onClick={closeEmojiPicker}
+            autoFocus={true}
           />
-          <button type="submit">
+          <button onClick={sendMessage} type="submit">
             <Send />
           </button>
         </form>

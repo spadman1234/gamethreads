@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Sidebar.css";
-import { SearchOutlined } from "@material-ui/icons";
+import { SearchOutlined, SportsFootball } from "@material-ui/icons";
 import SidebarChat from "./SidebarChat";
-import ChatIcon from "@material-ui/icons/Chat";
 import "./img/nfl-league-logo.png";
 import {
   AppBar,
@@ -17,74 +16,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import SwipeableViews from "react-swipeable-views";
-
-const nflTeamIds = [
-  ["arizona-cardinals", "Arizona Cardinals"],
-  ["atlanta-falcons", "Atlanta Falcons"],
-  ["baltimore-ravens", "Baltimore Ravens"],
-  ["buffalo-bills", "Buffalo Bills"],
-  ["carolina-panthers", "Carolina Panthers"],
-  ["chicago-bears", "Chicago Bears"],
-  ["cincinnati-bengals", "Cincinnati Bengals"],
-  ["cleveland-browns", "Cleveland Browns"],
-  ["dallas-cowboys", "Dallas Cowboys"],
-  ["denver-broncos", "Denver Broncos"],
-  ["detroit-lions", "Detroit Lions"],
-  ["green-bay-packers", "Green Bay Packers"],
-  ["houston-texans", "Houston Texans"],
-  ["indianapolis-colts", "Indianapolis Colts"],
-  ["jacksonville-jaguars", "Jacksonville Jaguars"],
-  ["kansas-city-chiefs", "Kansas City Chiefs"],
-  ["oakland-raiders", "Las Vegas Raiders"],
-  ["los-angeles-chargers", "Los Angeles Chargers"],
-  ["los-angeles-rams", "Los Angeles Rams"],
-  ["miami-dolphins", "Miami Dolphins"],
-  ["minnesota-vikings", "Minnesota Vikings"],
-  ["new-england-patriots", "New England Patriots"],
-  ["new-orleans-saints", "New Orleans Saints"],
-  ["new-york-giants", "New York Giants"],
-  ["new-york-jets", "New York Jets"],
-  ["philadelphia-eagles", "Philadelphia Eagles"],
-  ["pittsburgh-steelers", "Pittsburgh Steelers"],
-  ["san-francisco-49ers", "San Francisco 49ers"],
-  ["seattle-seahawks", "Seattle Seahawks"],
-  ["tampa-bay-buccaneers", "Tampa Bay Buccaneers"],
-  ["tennessee-titans", "Tennessee Titans"],
-  ["washington-redskins", "Washington Football Team"],
-];
-
-const nbaTeamIds = [
-  ["atlanta-hawks", "Atlanta Hawks"],
-  ["boston-celtics", "Boston Celtics"],
-  ["brooklyn-nets", "Brooklyn Nets"],
-  ["charlotte-hornets", "Charlotte Hornets"],
-  ["chicago-bulls", "Chicago Bulls"],
-  ["cleveland-cavaliers", "Cleveland Cavaliers"],
-  ["dallas-mavericks", "Dallas Mavericks"],
-  ["denver-nuggets", "Denver Nuggets"],
-  ["detroit-pistons", "Detroit Pistons"],
-  ["golden-state-warriors", "Golden State Warriors"],
-  ["houston-rockets", "Houston Rockets"],
-  ["indiana-pacers", "Indiana Pacers"],
-  ["la-clippers", "Los Angeles Clippers"],
-  ["los-angeles-lakers", "Los Angeles Lakers"],
-  ["memphis-grizzlies", "Memphis Grizzlies"],
-  ["miami-heat", "Miami Heat"],
-  ["milwaukee-bucks", "Milwaukee Bucks"],
-  ["minnesota-timberwolves", "Minnesota Timberwolves"],
-  ["new-orleans-pelicans", "New Orleans Pelicans"],
-  ["new-york-knicks", "New York Knicks"],
-  ["oklahoma-city-thunder", "Oklahoma City Thunder"],
-  ["orlando-magic", "Orlando Magic"],
-  ["philadelphia-76ers", "Philadelphia 76ers"],
-  ["phoenix-suns", "Phoenix Suns"],
-  ["portland-trail-blazers", "Portland Trail Blazers"],
-  ["sacramento-kings", "Sacramento Kings"],
-  ["san-antonio-spurs", "San Antonio Spurs"],
-  ["toronto-raptors", "Toronto Raptors"],
-  ["utah-jazz", "Utah Jazz"],
-  ["washington-wizards", "Washington Wizards"],
-];
+import { nbaTeamIds, nflTeamIds, mlbTeamIds, nhlTeamIds } from "./teamIds";
+import axios from "./axios";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -119,10 +52,12 @@ const FlairDialog = (props) => {
   }
 
   const handleClose = () => {
+    setSearchText("");
     onClose(selectedValue);
   };
 
   const handleTabChange = (event, newValue) => {
+    setSearchText("");
     setSelectedTab(newValue);
   };
 
@@ -131,11 +66,22 @@ const FlairDialog = (props) => {
   };
 
   const handleListItemClick = (value, flairImg) => {
+    setSearchText("");
     onClose(value, flairImg);
   };
 
   const handleSearchboxChange = (event) => {
     setSearchText(event.target.value);
+  };
+
+  const getMlbLogoLink = (teamId) => {
+    if (teamId === "baltimore-orioles") {
+      return "http://loodibee.com/wp-content/uploads/mlb-baltimore-orioles-logo-bird.png";
+    } else if (teamId === "cleveland-indians") {
+      return "http://loodibee.com/wp-content/uploads/mlb-cleveland-indians-logo-c.png";
+    } else {
+      return `http://loodibee.com/wp-content/uploads/mlb-${teamId}-logo.png`;
+    }
   };
 
   return (
@@ -172,6 +118,7 @@ const FlairDialog = (props) => {
                   placeholder="Search for teams"
                   type="text"
                   onChange={handleSearchboxChange}
+                  autoFocus
                 />
               </div>
             </div>
@@ -208,6 +155,7 @@ const FlairDialog = (props) => {
                   placeholder="Search for teams"
                   type="text"
                   onChange={handleSearchboxChange}
+                  autoFocus
                 />
               </div>
             </div>
@@ -243,10 +191,75 @@ const FlairDialog = (props) => {
             </List>
           </TabPanel>
           <TabPanel value={selectedTab} index={2}>
-            Item three
+            <div className="sidebar-search">
+              <div className="sidebar-search-container">
+                <SearchOutlined />
+                <input
+                  placeholder="Search for teams"
+                  type="text"
+                  onChange={handleSearchboxChange}
+                  autoFocus
+                />
+              </div>
+            </div>
+            <List>
+              {nhlTeamIds
+                .filter((team) =>
+                  team[1].toLowerCase().includes(searchText.toLowerCase())
+                )
+                .map((team) => (
+                  <ListItem
+                    button
+                    onClick={() =>
+                      handleListItemClick(
+                        team[0],
+                        `http://loodibee.com/wp-content/uploads/nhl-${team[0]}-logo.png`
+                      )
+                    }
+                    key={team[0]}
+                  >
+                    <Avatar
+                      className="team-avatar"
+                      src={`http://loodibee.com/wp-content/uploads/nhl-${team[0]}-logo.png`}
+                    />
+                    <p>{team[1]}</p>
+                  </ListItem>
+                ))}
+            </List>
           </TabPanel>
           <TabPanel value={selectedTab} index={3}>
-            Item four
+            <div className="sidebar-search">
+              <div className="sidebar-search-container">
+                <SearchOutlined />
+                <input
+                  placeholder="Search for teams"
+                  type="text"
+                  onChange={handleSearchboxChange}
+                  autoFocus
+                />
+              </div>
+            </div>
+            <List>
+              {mlbTeamIds
+                .filter((team) =>
+                  team[1].toLowerCase().includes(searchText.toLowerCase())
+                )
+                .map((team) => (
+                  <ListItem
+                    button
+                    onClick={() =>
+                      handleListItemClick(team[0], getMlbLogoLink(team[0]))
+                    }
+                    key={team[0]}
+                  >
+                    <Avatar
+                      className="team-avatar"
+                      src={getMlbLogoLink(team[0])}
+                    />
+                    <p>{team[1]}</p>
+                  </ListItem>
+                ))}
+            </List>
           </TabPanel>
         </SwipeableViews>
       </div>
@@ -254,25 +267,39 @@ const FlairDialog = (props) => {
   );
 };
 
-const Sidebar = () => {
-  const testChatList = [
-    {
-      img: "https://d1yjjnpx0p53s8.cloudfront.net/styles/logo-original-577x577/s3/052014/mlb.png?itok=4WGm1016",
-      title: "New York Mets vs Washington Nationals",
-      subtitle: "8:30 PM",
-    },
-    {
-      img: "http://loodibee.com/wp-content/uploads/nfl-league-logo.png",
-      title: "Dallas Cowboys vs Philadelphia Eagles",
-      subtitle: "1:00 PM",
-    },
-  ];
-
+const Sidebar = (props) => {
   const [currentFlair, setCurrentFlair] = useState(null);
   const [currentFlairImg, setCurrentFlairImg] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [searchboxValue, setSearchboxValue] = useState("");
-  const [chatList, setChatList] = useState(testChatList);
+  const [chatList, setChatList] = useState([]);
+
+  const isToday = (someDate) => {
+    const today = new Date();
+    return (
+      someDate.getDate() === today.getDate() &&
+      someDate.getMonth() === today.getMonth() &&
+      someDate.getFullYear() === today.getFullYear()
+    );
+  };
+
+  useEffect(() => {
+    axios.get("/api/v1/chats").then((response) => {
+      const newChatList = response.data.filter((chat) => {
+        if (chat.subtitle[chat.subtitle.length - 1] !== "Z") {
+          return true;
+        } else {
+          const gameTime = new Date(chat.subtitle);
+          if (isToday(gameTime)) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      });
+      setChatList(newChatList);
+    });
+  });
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
@@ -283,18 +310,24 @@ const Sidebar = () => {
     setCurrentFlair(value);
     if (flairImg) {
       setCurrentFlairImg(flairImg);
+      props.setFlair(flairImg);
     }
   };
 
   const handleSearchboxChange = (event) => {
     setSearchboxValue(event.target.value);
   };
+
+  const handleSidebarChatSelect = (chat) => {
+    if (props.username) props.setChat(chat);
+  };
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-title">
           <h1>gamethreads</h1>
-          <ChatIcon />
+          <SportsFootball />
         </div>
       </div>
       <div className="sidebar-search">
@@ -314,20 +347,30 @@ const Sidebar = () => {
             chat.title.toLowerCase().includes(searchboxValue.toLowerCase())
           )
           .map((chat) => (
-            <SidebarChat
-              img={chat.img}
-              title={chat.title}
-              subtitle={chat.subtitle}
-              key={chat.title}
-            />
+            <div key={chat.title} onClick={() => handleSidebarChatSelect(chat)}>
+              <ListItem disabled={props.username ? false : true} button>
+                <SidebarChat
+                  img={chat.img}
+                  title={chat.title}
+                  subtitle={chat.subtitle}
+                  key={chat.title}
+                />
+              </ListItem>
+            </div>
           ))}
       </div>
 
       <div className="sidebar-footer">
-        <div className="sidebar-flair" onClick={handleDialogOpen}>
-          <Avatar src={currentFlairImg} />
-          <p>Change your flair</p>
-        </div>
+        <ListItem
+          disabled={props.username ? false : true}
+          button
+          onClick={handleDialogOpen}
+        >
+          <div className="sidebar-flair">
+            <Avatar src={currentFlairImg} alt={currentFlair} />
+            <p>Change your flair</p>
+          </div>
+        </ListItem>
       </div>
       <FlairDialog
         selectedValue={currentFlair}
