@@ -75,6 +75,31 @@ const HomeScreen = (props) => {
           </Button>
         </DialogActions>
       </Dialog>
+      <div className="home-screen-about">
+        <p>Made with &#128156; by Will Spadafora</p>
+        <div>
+          <a
+            className="home-screen-about-links"
+            href="https://github.com/spadman1234"
+          >
+            GitHub
+          </a>{" "}
+          -{" "}
+          <a
+            className="home-screen-about-links"
+            href="https://www.linkedin.com/in/will-spadafora/"
+          >
+            LinkedIn
+          </a>{" "}
+          -{" "}
+          <a
+            className="home-screen-about-links"
+            href="mailto:spadman1234@gmail.com"
+          >
+            Email
+          </a>
+        </div>
+      </div>
     </div>
   );
 };

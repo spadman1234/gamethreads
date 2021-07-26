@@ -28,6 +28,24 @@
   color: #7e7e7e;
 }
 
+.home-screen-about {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  bottom: 3.5vh;
+  padding: 0px;
+  color: #7e7e7e;
+  align-items: center;
+}
+
+.home-screen-about-links:link {
+  color: #7e7e7e;
+}
+
+.home-screen-about-links:visited {
+  color: #7e7e7e;
+}
+
 .home-screen-flair-select {
   text-decoration: underline;
   cursor: pointer;
