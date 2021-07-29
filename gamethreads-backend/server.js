@@ -5,8 +5,6 @@ import Pusher from "pusher";
 import cors from "cors";
 import cron from "node-cron";
 import axios from "axios";
-import favicon from "serve-favicon";
-import path from "path";
 
 // app config
 const app = express();
@@ -106,7 +104,7 @@ cron.schedule("0 16 * * *", updateGameChatList);
 app.use(express.json());
 app.use(express.static("build"));
 app.use(cors());
-app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
+//app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 // DB config
 const connection_url = process.env.MONGODB_URI;
