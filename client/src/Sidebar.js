@@ -18,6 +18,7 @@ import {
 import SwipeableViews from "react-swipeable-views";
 import { nbaTeamIds, nflTeamIds, mlbTeamIds, nhlTeamIds } from "./teamIds";
 import axios from "./axios";
+import images from "./images.js";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -74,16 +75,6 @@ const FlairDialog = (props) => {
     setSearchText(event.target.value);
   };
 
-  const getMlbLogoLink = (teamId) => {
-    if (teamId === "baltimore-orioles") {
-      return "http://loodibee.com/wp-content/uploads/mlb-baltimore-orioles-logo-bird.png";
-    } else if (teamId === "cleveland-indians") {
-      return "http://loodibee.com/wp-content/uploads/mlb-cleveland-indians-logo-c.png";
-    } else {
-      return `http://loodibee.com/wp-content/uploads/mlb-${teamId}-logo.png`;
-    }
-  };
-
   return (
     <Dialog onClose={handleClose} aria-labelledby="dialog-title" open={open}>
       <div>
@@ -133,14 +124,18 @@ const FlairDialog = (props) => {
                     onClick={() =>
                       handleListItemClick(
                         team[0],
-                        `http://loodibee.com/wp-content/uploads/nfl-${team[0]}-team-logo.png`
+                        `nfl-${team[0]}-team-logo.png`
                       )
                     }
                     key={team[0]}
                   >
                     <Avatar
                       className="team-avatar"
-                      src={`http://loodibee.com/wp-content/uploads/nfl-${team[0]}-team-logo.png`}
+                      src={
+                        images[`nfl-${team[0]}-team-logo.png`]
+                          ? images[`nfl-${team[0]}-team-logo.png`].default
+                          : ""
+                      }
                     />
                     <p>{team[1]}</p>
                   </ListItem>
@@ -168,22 +163,13 @@ const FlairDialog = (props) => {
                   <ListItem
                     button
                     onClick={() =>
-                      handleListItemClick(
-                        team[0],
-                        team[0] === "denver-nuggets"
-                          ? "http://loodibee.com/wp-content/uploads/nba-denver-nuggets-logo-2018.png"
-                          : `http://loodibee.com/wp-content/uploads/nba-${team[0]}-logo.png`
-                      )
+                      handleListItemClick(team[0], `nba-${team[0]}-logo.png`)
                     }
                     key={team[0]}
                   >
                     <Avatar
                       className="team-avatar"
-                      src={
-                        team[0] === "denver-nuggets"
-                          ? "http://loodibee.com/wp-content/uploads/nba-denver-nuggets-logo-2018.png"
-                          : `http://loodibee.com/wp-content/uploads/nba-${team[0]}-logo.png`
-                      }
+                      src={images[`nba-${team[0]}-logo.png`].default}
                     />
                     <p>{team[1]}</p>
                   </ListItem>
@@ -211,16 +197,13 @@ const FlairDialog = (props) => {
                   <ListItem
                     button
                     onClick={() =>
-                      handleListItemClick(
-                        team[0],
-                        `http://loodibee.com/wp-content/uploads/nhl-${team[0]}-logo.png`
-                      )
+                      handleListItemClick(team[0], `nhl-${team[0]}-logo.png`)
                     }
                     key={team[0]}
                   >
                     <Avatar
                       className="team-avatar"
-                      src={`http://loodibee.com/wp-content/uploads/nhl-${team[0]}-logo.png`}
+                      src={images[`nhl-${team[0]}-logo.png`].default}
                     />
                     <p>{team[1]}</p>
                   </ListItem>
@@ -248,13 +231,13 @@ const FlairDialog = (props) => {
                   <ListItem
                     button
                     onClick={() =>
-                      handleListItemClick(team[0], getMlbLogoLink(team[0]))
+                      handleListItemClick(team[0], `mlb-${team[0]}-logo.png`)
                     }
                     key={team[0]}
                   >
                     <Avatar
                       className="team-avatar"
-                      src={getMlbLogoLink(team[0])}
+                      src={images[`mlb-${team[0]}-logo.png`].default}
                     />
                     <p>{team[1]}</p>
                   </ListItem>
@@ -269,7 +252,7 @@ const FlairDialog = (props) => {
 
 const Sidebar = (props) => {
   const [currentFlair, setCurrentFlair] = useState(null);
-  const [currentFlairImg, setCurrentFlairImg] = useState(null);
+  const [currentFlairImg, setCurrentFlairImg] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [searchboxValue, setSearchboxValue] = useState("");
   const [chatList, setChatList] = useState([]);
@@ -299,7 +282,7 @@ const Sidebar = (props) => {
       });
       setChatList(newChatList);
     });
-  });
+  }, []);
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
@@ -367,7 +350,12 @@ const Sidebar = (props) => {
           onClick={handleDialogOpen}
         >
           <div className="sidebar-flair">
-            <Avatar src={currentFlairImg} alt={currentFlair} />
+            <Avatar
+              src={
+                currentFlairImg !== "" ? images[currentFlairImg].default : ""
+              }
+              alt={currentFlair}
+            />
             <p>Change your flair</p>
           </div>
         </ListItem>

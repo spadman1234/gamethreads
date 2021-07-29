@@ -5,6 +5,8 @@ import Pusher from "pusher";
 import cors from "cors";
 import cron from "node-cron";
 import axios from "axios";
+import favicon from "serve-favicon";
+import path from "path";
 
 // app config
 const app = express();
@@ -20,12 +22,10 @@ const pusher = new Pusher({
 
 const oddsApiKey = "a4915c49f1758c935a36ec053a0a8b84";
 
-const nflLogo = "http://loodibee.com/wp-content/uploads/nfl-league-logo.png";
-const nbaLogo =
-  "http://loodibee.com/wp-content/uploads/nba-logo-transparent.png";
-const nhlLogo = "http://loodibee.com/wp-content/uploads/NHL-league-logo.png";
-const mlbLogo =
-  "http://loodibee.com/wp-content/uploads/Major_League_Baseball_MLB_transparent_logo.png";
+const nflLogo = "nfl-league-logo.png";
+const nbaLogo = "nba-league-logo.png";
+const nhlLogo = "nhl-league-logo.png";
+const mlbLogo = "mlb-league-logo.png";
 
 const sportKeys = [
   "americanfootball_nfl",
@@ -44,7 +44,7 @@ const oddsApiRequests = sportKeys.map((sport) =>
 
 const defaultChatList = [
   {
-    img: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Olympic_rings_square.svg",
+    img: "olympics-logo.svg",
     title: "Tokyo Olympic Games",
     subtitle: "General discussion",
   },
@@ -104,12 +104,12 @@ cron.schedule("0 16 * * *", updateGameChatList);
 
 // middleware
 app.use(express.json());
-
+app.use(express.static("build"));
 app.use(cors());
+app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 
 // DB config
-const connection_url =
-  "mongodb+srv://admin:NAXPOWFdajWIJjP2@cluster0.5czzu.mongodb.net/gamethreadsdb?retryWrites=true&w=majority";
+const connection_url = process.env.MONGODB_URI;
 mongoose.connect(connection_url, {
   useCreateIndex: true,
   useNewUrlParser: true,
@@ -141,7 +141,10 @@ db.once("open", () => {
   });
 });
 // api routes
-app.get("/", (req, res) => res.status(200).send("Hello world"));
+
+app.get("/api/v1/test", (req, res) => {
+  res.status(200).send("hello world");
+});
 
 app.get("/api/v1/messages/sync", (req, res) => {
   Messages.find((err, data) => {

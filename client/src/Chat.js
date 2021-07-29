@@ -5,6 +5,7 @@ import "./Chat.css";
 import Picker from "emoji-picker-react";
 import Pusher from "pusher-js";
 import axios from "./axios";
+import images from "./images.js";
 
 const ChatMessage = (props) => {
   return (
@@ -13,7 +14,10 @@ const ChatMessage = (props) => {
         props.sent ? "chat-message-container-sent" : "chat-message-container"
       }
     >
-      <Avatar className="chat-message-flair" src={props.flair} />
+      <Avatar
+        className="chat-message-flair"
+        src={props.flair !== "" ? images[props.flair].default : ""}
+      />
       <p
         className={
           props.sent ? "chat-message chat-message-sent" : "chat-message"
@@ -107,7 +111,7 @@ const Chat = (props) => {
   return (
     <div className="chat">
       <div className="chat-header">
-        <Avatar src={props.img} />
+        <Avatar src={images[props.img].default} />
         <div className="chat-header-info">
           <h2>{props.title}</h2>
           <p>{subtitle}</p>

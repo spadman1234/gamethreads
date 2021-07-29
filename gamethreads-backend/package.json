@@ -11,8 +11,13 @@
   "author": "Will Spadafora",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "mongoose": "^5.13.3",
-    "pusher": "^5.0.0"
+    "node-cron": "^3.0.0",
+    "path": "^0.12.7",
+    "pusher": "^5.0.0",
+    "serve-favicon": "^2.5.0"
   }
 }
