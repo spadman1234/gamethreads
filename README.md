@@ -4,6 +4,8 @@
 
 A web application that creates chat rooms for live sporting events. Choose a team to represent as your flair, then join a chat for any live NFL, NBA, NHL, or MLB game. You can also join general discussions for any of the leagues listed.
 
+![enter image description here](https://i.imgur.com/5tAvkNR.gif)
+
 
 **Tech Stack:**
 
@@ -14,4 +16,3 @@ A web application that creates chat rooms for live sporting events. Choose a tea
  - Pusher
 
 Created by Will Spadafora
-
